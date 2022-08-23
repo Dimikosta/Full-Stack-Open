@@ -1,0 +1,25 @@
+note left of browser
+Single Page App Verison
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+server-->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+server-->browser: spa.js
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server-->browser: data.json
+note over browser
+Browser sends new note as JSON data
+end note
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+note over server
+Server code process data and
+adds it to data.json
+end note
+server-->browser: status code 201 message:"note created"
+note over browser
+Browser spa.JS reads the updated
+data.JSON and displays the new note
+end note
