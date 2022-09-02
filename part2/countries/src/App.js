@@ -3,11 +3,7 @@ import axios from 'axios';
 
 const App = (props) => {
 const [countries, setCountries] = useState([])
-const [weather, setWeather] = useState([])
 const [search, setSearch] = useState('')
-
-//API Key for weather service
-const api_key = process.env.REACT_APP_API_KEY
 
 // Gets Country data using API
   useEffect(() => {
@@ -63,9 +59,7 @@ const DisplayCountry = ({ country }) => {
       <DisplayLanguages languages={country.languages} />
       <img src={country.flags.png} alt="Country's Flag" />
       <h2>Weather in {country.capital}</h2>
-      <p>latitude: {country.capitalInfo.latlng[0]}</p>
-      <p>longitude: {country.capitalInfo.latlng[1]}</p>
-      <DisplayWeather lat={country.capitalInfo.latlng[0]} lng={country.capitalInfo.latlng[1]} />
+      <DisplayWeather lat={country.capitalInfo.latlng[0]} lng={country.capitalInfo.latlng[1]} city={country.capital}/>
     </>
   )
 }
@@ -82,26 +76,44 @@ const DisplayLanguages = ({languages}) => {
   )
 }
 
-const DisplayWeather = ({lat, lng}) => {
-// Gets Weather data
-useEffect(() => {
-  axios
-    .get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,daily,alerts&appid=${api_key}`)
-    .then(response => {
-      setWeather(response.data)
-    })
-})
+const DisplayWeather = (props) => {
+  const [weather, setWeather] = useState(null)
 
-  // return (
-  //   <div>
-  //     <p>Temperature: {weather.current.temp}</p>
-  //     <img src={`http://openweathermap.org/img/wn/${weather.current.weather.icon}@2x.png`} alt="Weather Icon" />
-  //     <p>Wind: {weather.current.wind_speed}</p>
-  //   </div>
-  // )
+  //API Key for weather service
+  const api_key = process.env.REACT_APP_API_KEY 
 
-  console.log(weather)
-  return <p>test</p>
+  const weatherUrl = new URL("http://api.openweathermap.org/data/2.5/weather?")
+
+  weatherUrl.searchParams.set("q", `${props.city}`)
+  weatherUrl.searchParams.set("units", "metric")
+  weatherUrl.searchParams.set("appid", `${api_key}`)
+
+  const getWeather = () => {
+    axios
+      .get(weatherUrl)
+      .then(response => {
+        setWeather(response.data)
+      })
+  }
+
+  useEffect(getWeather, [])
+
+  const weatherIcon = weather?.weather[0].icon
+  let iconUrl = new URL(`http://openweathermap.org/img/wn/${weatherIcon}@2x.png`)
+
+  return (
+    <div>
+      <div>
+        Temperature: {weather?.main.temp} Celsius
+      </div>
+      <div>
+        <img src={iconUrl} alt="Weather Icon"/>
+      </div>
+      <div>
+        Wind: {weather?.wind.speed} m/s
+      </div>
+    </div>
+  )
 }
 
   return (
