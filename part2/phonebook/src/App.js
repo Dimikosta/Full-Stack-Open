@@ -1,18 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import AddPerson from './components/AddPerson'
 import DisplayPhonebook from './components/DisplayPhonebook'
 import SearchFilter from './components/SearchFilter'
 
 const App = (props) => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/db')
+      .then(response => {
+        setPersons(response.data.persons)
+      })
+  }, [])
 
   const dupeChecker = (persons) => {
     return persons.some((person) => newName === person.name)
@@ -56,7 +60,7 @@ const App = (props) => {
     setSearch(event.target.value)
   }
 
-  const searchFilter = ( persons ) => {
+  const searchFilter = (persons) => {
     if (search === '') {
       return persons
     }
@@ -65,22 +69,23 @@ const App = (props) => {
   }
 
   return (
+
     <div>
       <h2>Phonebook</h2>
-        <div>
-          Find someone: <input 
-                        
-                        onChange={handleFilter}
-                        />
-        </div>
+      <div>
+        Find someone: <input
+
+          onChange={handleFilter}
+        />
+      </div>
       <h2>Add a new Entry</h2>
       {/* <AddPerson props={props} /> */}
       <form>
         <div>
-          name: <input 
-                  value={newName}
-                  onChange={handleNameChange}
-                  />
+          name: <input
+            value={newName}
+            onChange={handleNameChange}
+          />
         </div>
         <div>
           number: <input
@@ -95,7 +100,7 @@ const App = (props) => {
       <h2>Numbers</h2>
       <div>
         <DisplayPhonebook people={searchFilter(persons)} />
-      </div>   
+      </div>
     </div>
   )
 }
