@@ -1,4 +1,4 @@
-const SearchFilter = ( { persons, search} ) => {
+const SearchFilter = (persons, search) => {
     if (search === '') {
         return persons
     }
@@ -6,4 +6,4 @@ const SearchFilter = ( { persons, search} ) => {
     return filtered;
 }
 
-export default SearchFilter
+// export default SearchFilter
